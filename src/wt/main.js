@@ -3,7 +3,7 @@ import { Worker } from "node:worker_threads";
 
 const performCalculations = async () => {
   const cores = os.cpus().length;
-  const resultsArr = [];
+  const resultsArr = new Array(cores);
   const workers = [];
 
   const workerPath = new URL("./worker.js", import.meta.url);
@@ -12,11 +12,11 @@ const performCalculations = async () => {
     const worker = new Worker(workerPath, { workerData: 10 + i });
 
     worker.on("message", (result) => {
-      resultsArr.push({ status: "resolved", data: result });
+      resultsArr[i] = { status: "resolved", data: result };
     });
 
     worker.on("error", (err) => {
-      resultsArr.push({ status: "error", data: null });
+      resultsArr[i] = { status: "error", data: null };
     });
 
     workers.push(worker);
